@@ -13,6 +13,7 @@ export interface LoopOptions extends ToneWithContextOptions {
 	probability: NormalRange;
 	mute: boolean;
 	humanize: boolean | Time;
+	offset: Time;
 }
 
 /**
@@ -74,7 +75,8 @@ export class Loop<Options extends LoopOptions = LoopOptions> extends ToneWithCon
 			iterations: Infinity,
 			probability: 1,
 			mute: false,
-			humanize: false
+			humanize: false,
+			offset: 0
 		});
 	}
 
@@ -160,6 +162,16 @@ export class Loop<Options extends LoopOptions = LoopOptions> extends ToneWithCon
 	}
 	set humanize(variation) {
 		this._event.humanize = variation;
+	}
+
+	/**
+	 * Add a variation to the scheduled time. 
+	 */
+	get offset(): Time {
+		return this._event.offset;
+	}
+	set offset(variation) {
+		this._event.offset = variation;
 	}
 
 	/**

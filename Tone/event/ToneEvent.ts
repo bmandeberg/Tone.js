@@ -20,6 +20,7 @@ export interface ToneEventOptions<T> extends ToneWithContextOptions {
 	probability: NormalRange;
 	mute: boolean;
 	humanize: boolean | Time;
+	offset: Time;
 }
 
 /**
@@ -99,6 +100,11 @@ export class ToneEvent<ValueType = any> extends ToneWithContext<ToneEventOptions
 	protected _humanize: boolean | Time;
 
 	/**
+	 * a fixed amount of variation from the given time.
+	 */
+	protected _offset: Time;
+
+	/**
 	 * If mute is true, the callback won't be invoked.
 	 */
 	mute: boolean;
@@ -122,6 +128,7 @@ export class ToneEvent<ValueType = any> extends ToneWithContext<ToneEventOptions
 		this._playbackRate = options.playbackRate;
 		this._probability = options.probability;
 		this._humanize = options.humanize;
+		this._offset = options.offset;
 		this.mute = options.mute;
 		this._playbackRate = options.playbackRate;
 		this._state.increasing = true;
@@ -133,6 +140,7 @@ export class ToneEvent<ValueType = any> extends ToneWithContext<ToneEventOptions
 		return Object.assign(ToneWithContext.getDefaults(), {
 			callback: noOp,
 			humanize: false,
+			offset: 0,
 			loop: false,
 			loopEnd: "1m",
 			loopStart: 0,
@@ -223,6 +231,17 @@ export class ToneEvent<ValueType = any> extends ToneWithContext<ToneEventOptions
 	}
 
 	/**
+	 * Introduces an offset to the given time
+	 */
+	get offset(): Time {
+		return this._offset;
+	}
+
+	set offset(variation) {
+		this._offset = variation;
+	}
+
+	/**
 	 * Start the note at the given time.
 	 * @param  time  When the event should start.
 	 */
@@ -289,6 +308,9 @@ export class ToneEvent<ValueType = any> extends ToneWithContext<ToneEventOptions
 					variation = this.toSeconds(this.humanize);
 				}
 				time += (Math.random() * 2 - 1) * variation;
+			}
+			if (this.offset) {
+				time += this.toSeconds(this.offset);
 			}
 			this.callback(time, this.value);
 		}
